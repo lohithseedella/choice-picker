@@ -1,56 +1,53 @@
-@import url("https://fonts.googleapis.com/css2?family=Muli&display=swap");
+const tagsElements = document.getElementById("tags");
+const textarea = document.getElementById("textarea");
 
-* {
-  box-sizing: border-box;
-}
+const createTags = (input) => {
+  const tags = input
+    .split(",")
+    .filter((tag) => tag.trim() !== "")
+    .map((tag) => tag.trim());
+  tagsElements.innerHTML = "";
+  tags.forEach((tag) => {
+    const tagElement = document.createElement("span");
+    tagElement.classList.add("tag");
+    tagElement.innerText = tag;
+    tagsElements.appendChild(tagElement);
+  });
+};
 
-body {
-  background-color: #2e2bf0;
-  font-family: "Muli", sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  overflow: hidden;
-  margin: 0;
-}
+const pickRandomTag = () => {
+  const tags = document.querySelectorAll(".tag");
+  return tags[Math.floor(Math.random() * tags.length)];
+};
 
-h3 {
-  color: #fff;
-  margin: 10px 0 20px;
-  text-align: center;
-}
+const highlightTag = (tag) => tag.classList.add("highlight");
 
-.container {
-  width: 500px;
-}
+const unHighlightTag = (tag) => tag.classList.remove("highlight");
 
-textarea {
-  border: none;
-  display: block;
-  width: 100%;
-  height: 100px;
-  font-family: inherit;
-  padding: 10px;
-  margin: 0 0 20px;
-  font-size: 16px;
-}
+const randomSelect = () => {
+  const times = 30;
+  const interval = setInterval(() => {
+    const randomTag = pickRandomTag();
+    highlightTag(randomTag);
+    setTimeout(() => {
+      unHighlightTag(randomTag);
+    }, 100);
+  }, 100);
 
-textarea:focus {
-  outline: 100;
-}
+  setTimeout(() => {
+    clearInterval(interval);
+    setTimeout(() => {
+      const randomTag = pickRandomTag();
+      highlightTag(randomTag);
+    }, 100);
+  }, times * 100);
+};
 
-.tag {
-  background-color: #ff0000;
-  color: #fff;
-  border-radius: 50px;
-  padding: 10px 20px;
-  margin: 0 5px 10px 0;
-  font-size: 14px;
-  display: inline-block;
-}
-
-.tag.highlight {
-  background-color: #00ff00;
-}
+textarea.focus();
+textarea.addEventListener("keyup", (e) => {
+  createTags(e.target.value);
+  if (e.key === "Enter") {
+    setTimeout(() => (e.target.value = ""), 10);
+    randomSelect();
+  }
+});
